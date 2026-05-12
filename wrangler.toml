@@ -1,0 +1,17 @@
+name = "e-stock-backend"
+main = "src/index.js"
+compatibility_date = "2024-10-01"
+compatibility_flags = [ "nodejs_compat" ]
+
+# Default (Prod)
+[[d1_databases]]
+binding = "DB"
+database_name = "e-stock-db"
+database_id = "0a2a47ec-caab-4811-9b7b-a923ae6de982"
+
+[env.dev]
+name = "e-stock-backend-dev"
+[[env.dev.d1_databases]]
+binding = "DB"
+database_name = "e-stock-db-dev"
+database_id = "0a2a47ec-caab-4811-9b7b-a923ae6de982" # Using same DB for now, or you can create another one

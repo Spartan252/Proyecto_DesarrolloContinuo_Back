@@ -1,35 +1,35 @@
-import request from "supertest";
+import request from 'supertest';
 import app from '../server.js';
-import { db } from "../config/db.js";
 
-describe("API de películas", () => {
-  beforeEach(async () => {
-    // limpiar película de prueba
-    await db.query("DELETE FROM peliculas WHERE titulo = 'Pelicula Test'");
-  });
+jest.mock('../models/movieModel.js', () => ({
+  getAllMovies: jest.fn().mockResolvedValue([
+    { id: 1, titulo: 'The Matrix', disponible: 1 },
+  ]),
+  getMovieById: jest.fn().mockResolvedValue({ id: 1, titulo: 'The Matrix' }),
+  createMovie: jest.fn().mockResolvedValue(),
+  updateMovie: jest.fn().mockResolvedValue(),
+  deleteMovie: jest.fn().mockResolvedValue(),
+}));
 
-  it("debería registrar una película correctamente", async () => {
-    const res = await request(app)
-      .post("/api/movies")
-      .send({
-        titulo: "Pelicula Renta",
-        genero: "Test",
-        descripcion: "Película para prueba de renta",
-        portada_url: "TEST"
-
-      });
-
-    console.log("📤 Respuesta del servidor:", res.statusCode, res.body);
-    expect(res.statusCode).toBe(201);
-    expect(res.body).toHaveProperty("message", "Película creada correctamente");
-  });
-
-  it("debería obtener el listado de películas", async () => {
-    const res = await request(app).get("/api/movies");
-    console.log("📥 Listado de películas:", res.statusCode);
+describe('API de películas', () => {
+  it('debería obtener el listado de películas', async () => {
+    const res = await request(app).get('/api/movies');
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
   });
 
+  it('debería crear una película correctamente', async () => {
+    const res = await request(app)
+      .post('/api/movies')
+      .send({ titulo: 'Pelicula Test', descripcion: 'Test', portada_url: 'http://test.com' });
 
+    expect(res.statusCode).toBe(201);
+    expect(res.body).toHaveProperty('message', 'Película creada correctamente');
+  });
+
+  it('debería obtener una película por ID', async () => {
+    const res = await request(app).get('/api/movies/1');
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty('titulo');
+  });
 });

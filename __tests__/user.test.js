@@ -1,31 +1,39 @@
-import request from "supertest";
-import app from "../server.js";
-import { db } from "../config/db.js";
+import request from 'supertest';
+import app from '../server.js';
 
-describe("API de usuarios", () => {
-  beforeEach(async () => {
-    // elimina el usuario si existe para evitar conflicto
-    await db.query("DELETE FROM users WHERE email = 'usertest@test.com'");
+jest.mock('../models/userModel.js', () => ({
+  getUserByEmail: jest.fn(),
+  createUser: jest.fn().mockResolvedValue(1),
+}));
+
+import { getUserByEmail } from '../models/userModel.js';
+
+describe('API de usuarios', () => {
+  beforeEach(() => {
+    getUserByEmail.mockResolvedValue(null);
   });
 
-  it("debería registrar un usuario correctamente", async () => {
+  it('debería registrar un usuario correctamente', async () => {
     const res = await request(app)
-      .post("/api/users/register")
-      .send({
-        nombre: "UserTest",
-        email: "usertest@test.com",
-        password: "1234",
-      })
-      .set("Accept", "application/json");
-
-    console.log("📤 Respuesta del servidor:", res.statusCode, res.body);
+      .post('/api/users/register')
+      .send({ nombre: 'UserTest', email: 'usertest@test.com', password: 'password123' });
 
     expect(res.statusCode).toBe(201);
-    expect(res.body).toHaveProperty("message");
+    expect(res.body).toHaveProperty('message', 'Usuario creado correctamente');
   });
 
-  it("debería rechazar un registro sin datos", async () => {
-    const res = await request(app).post("/api/users/register").send({});
+  it('debería rechazar un registro sin datos', async () => {
+    const res = await request(app).post('/api/users/register').send({});
     expect(res.statusCode).toBe(400);
+  });
+
+  it('debería rechazar registro si el usuario ya existe', async () => {
+    getUserByEmail.mockResolvedValue({ id: 1, email: 'usertest@test.com' });
+    const res = await request(app)
+      .post('/api/users/register')
+      .send({ nombre: 'UserTest', email: 'usertest@test.com', password: 'password123' });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toHaveProperty('message', 'El usuario ya existe');
   });
 });

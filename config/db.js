@@ -1,34 +1,23 @@
-import mysql from 'mysql2/promise';
-import dotenv from 'dotenv';
+let d1Binding = null;
 
-dotenv.config();
+export const setD1Binding = (binding) => {
+  d1Binding = binding;
+};
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT || 3306,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-  ssl: {
-    rejectUnauthorized: true
+const query = async (sql, params = []) => {
+  if (!d1Binding) throw new Error('D1 binding not initialized. Call setD1Binding(env.DB) first.');
+
+  const stmt = d1Binding.prepare(sql);
+
+  if (sql.trim().toUpperCase().startsWith('SELECT')) {
+    const { results } = await stmt.bind(...params).all();
+    return [results];
+  } else {
+    const result = await stmt.bind(...params).run();
+    return [{ insertId: result.meta.last_row_id ?? null, affectedRows: result.meta.changes }];
   }
-});
+};
 
-// Verificar conexión al iniciar
-async function testConnection() {
-  try {
-    const conn = await pool.getConnection();
-    console.log('✅ Conectado a la base de datos MySQL');
-    conn.release();
-  } catch (err) {
-    console.error('❌ Error al conectar a MySQL:', err);
-  }
-}
+export const db = { query, execute: query };
 
-testConnection();
-
-export const db = pool;
 export default db;
