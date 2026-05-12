@@ -113,7 +113,7 @@ API REST para un sistema de renta de películas en línea. Gestiona usuarios, ca
 | Capa | Tecnología |
 |---|---|
 | **Runtime** | Node.js + Express 5 |
-| **Base de datos** | MySQL (Azure) |
+| **Base de datos** | MySQL |
 | **Autenticación** | JWT + bcryptjs |
 | **Testing** | Jest + Supertest |
 | **CI/CD** | GitHub Actions |
