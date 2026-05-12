@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "test": "JEST_JUNIT_OUTPUT_DIR=./test-results JEST_JUNIT_OUTPUT_NAME=jest-results.xml NODE_OPTIONS=--experimental-vm-modules jest --coverage --coverageReporters=cobertura --coverageDirectory=./coverage"
+    "test": "cross-env JEST_JUNIT_OUTPUT_DIR=./test-results JEST_JUNIT_OUTPUT_NAME=jest-results.xml NODE_OPTIONS=--experimental-vm-modules jest --coverage --coverageReporters=cobertura --coverageDirectory=./coverage"
   },
   "keywords": [],
   "author": "",
