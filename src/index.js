@@ -1,7 +1,6 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import jwt from 'jsonwebtoken';
-import * as Sentry from '@sentry/node';
 import { setD1Binding } from '../config/db.js';
 import { register, login } from '../controllers/userController.js';
 import { listMovies, getMovie, addMovie, editMovie, removeMovie } from '../controllers/movieController.js';
@@ -9,20 +8,9 @@ import { rent, listUserRents, returnRentedMovie } from '../controllers/rentContr
 
 const app = new Hono();
 
-let sentryInitialized = false;
-
 app.use('*', cors());
 
 app.use('*', async (c, next) => {
-  if (!sentryInitialized && c.env.SENTRY_DSN) {
-    Sentry.init({
-      dsn: c.env.SENTRY_DSN,
-      environment: c.env.ENV || 'development',
-      tracesSampleRate: 1.0,
-    });
-    sentryInitialized = true;
-  }
-
   setD1Binding(c.env.DB);
 
   if (typeof process === 'undefined') {
@@ -35,7 +23,6 @@ app.use('*', async (c, next) => {
 });
 
 app.onError((err, c) => {
-  if (sentryInitialized) Sentry.captureException(err);
   return c.json({ message: 'Error interno del servidor', error: err.message }, 500);
 });
 
