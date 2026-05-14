@@ -19,12 +19,22 @@ jobs:
       - run: npm ci
       - name: Run tests
         run: npm test
+        env:
+          NODE_ENV: test
+          JWT_SECRET: test-secret-ci
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: coverage/
+      - name: Publish test report
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Jest Tests
+          path: coverage/junit.xml
+          reporter: jest-junit
 
   deploy-dev:
     name: Deploy to Development

@@ -12,6 +12,7 @@ jest.unstable_mockModule('../models/movieModel.js', () => ({
 }));
 
 const { default: app } = await import('../server.js');
+const { getMovieById } = await import('../models/movieModel.js');
 
 describe('API de películas', () => {
   it('debería obtener el listado de películas', async () => {
@@ -33,5 +34,27 @@ describe('API de películas', () => {
     const res = await request(app).get('/api/movies/1');
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('titulo');
+  });
+
+  it('debería retornar 404 si la película no existe', async () => {
+    getMovieById.mockResolvedValueOnce(null);
+    const res = await request(app).get('/api/movies/999');
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toHaveProperty('message', 'Película no encontrada');
+  });
+
+  it('debería actualizar una película correctamente', async () => {
+    const res = await request(app)
+      .put('/api/movies/1')
+      .send({ titulo: 'Matrix Reloaded', descripcion: 'Secuela', portada_url: 'http://test.com', disponible: 1 });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty('message', 'Película actualizada correctamente');
+  });
+
+  it('debería eliminar una película correctamente', async () => {
+    const res = await request(app).delete('/api/movies/1');
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty('message', 'Película eliminada correctamente');
   });
 });

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "wrangler dev",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage --coverageReporters=cobertura --coverageDirectory=./coverage"
+    "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest --coverage --coverageReporters=cobertura --coverageDirectory=./coverage"
   },
   "dependencies": {
     "@sentry/node": "^10.26.0",
@@ -30,6 +30,13 @@
       "<rootDir>/jest.setup.js"
     ],
     "testEnvironment": "node",
-    "transform": {}
+    "transform": {},
+    "reporters": [
+      "default",
+      ["jest-junit", {
+        "outputDirectory": "./coverage",
+        "outputName": "junit.xml"
+      }]
+    ]
   }
 }

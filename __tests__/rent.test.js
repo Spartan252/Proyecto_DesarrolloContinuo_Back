@@ -28,4 +28,10 @@ describe('API de rentas', () => {
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
   });
+
+  it('debería devolver una película rentada correctamente', async () => {
+    const res = await request(app).delete('/api/rents/1');
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty('message', 'Película devuelta correctamente');
+  });
 });
