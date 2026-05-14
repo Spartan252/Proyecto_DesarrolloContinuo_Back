@@ -1,12 +1,13 @@
+import { jest } from '@jest/globals';
 import request from 'supertest';
-import app from '../server.js';
 
-jest.mock('../models/userModel.js', () => ({
+jest.unstable_mockModule('../models/userModel.js', () => ({
   getUserByEmail: jest.fn(),
   createUser: jest.fn().mockResolvedValue(1),
 }));
 
-import { getUserByEmail } from '../models/userModel.js';
+const { default: app } = await import('../server.js');
+const { getUserByEmail } = await import('../models/userModel.js');
 
 describe('API de usuarios', () => {
   beforeEach(() => {

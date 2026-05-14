@@ -29,6 +29,7 @@
     "setupFilesAfterEnv": [
       "<rootDir>/jest.setup.js"
     ],
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "transform": {}
   }
 }
