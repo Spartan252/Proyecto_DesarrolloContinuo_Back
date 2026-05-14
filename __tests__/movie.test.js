@@ -1,7 +1,7 @@
+import { jest } from '@jest/globals';
 import request from 'supertest';
-import app from '../server.js';
 
-jest.mock('../models/movieModel.js', () => ({
+jest.unstable_mockModule('../models/movieModel.js', () => ({
   getAllMovies: jest.fn().mockResolvedValue([
     { id: 1, titulo: 'The Matrix', disponible: 1 },
   ]),
@@ -10,6 +10,8 @@ jest.mock('../models/movieModel.js', () => ({
   updateMovie: jest.fn().mockResolvedValue(),
   deleteMovie: jest.fn().mockResolvedValue(),
 }));
+
+const { default: app } = await import('../server.js');
 
 describe('API de películas', () => {
   it('debería obtener el listado de películas', async () => {

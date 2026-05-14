@@ -1,13 +1,15 @@
+import { jest } from '@jest/globals';
 import request from 'supertest';
-import app from '../server.js';
 
-jest.mock('../models/rentModel.js', () => ({
+jest.unstable_mockModule('../models/rentModel.js', () => ({
   rentMovie: jest.fn().mockResolvedValue(1),
   getRentedMoviesByUser: jest.fn().mockResolvedValue([
     { id: 1, titulo: 'The Matrix', portada_url: 'http://img.com', fecha_renta: '2026-01-01' },
   ]),
   returnMovie: jest.fn().mockResolvedValue(),
 }));
+
+const { default: app } = await import('../server.js');
 
 describe('API de rentas', () => {
   it('debería registrar una renta correctamente', async () => {
